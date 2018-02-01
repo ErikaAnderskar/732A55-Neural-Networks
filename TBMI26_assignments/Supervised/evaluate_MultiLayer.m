@@ -20,30 +20,32 @@ selectAtRandom = true; % true = select features at random, false = select the fi
 [ Xt, Dt, Lt ] = selectTrainingSamples(X, D, L, numSamplesPerLabelPerBin, numBins, selectAtRandom );
 
 % Note: Xt, Dt, Lt will be cell arrays, to extract a bin from them use i.e.
-% XBin1 = Xt{1};
+XBin1 = Xt{1};
 %% Modify the X Matrices so that a bias is added
 
 % The Training Data
-Xtraining = [];
+h = ones(1,length(XBin1));
+Xtraining = [h; XBin1];
 
 % The Test Data
-Xtest = [];
+a = ones(1,length(Xt{2}));
+Xtest = [a; Xt{2}];
 
 
 %% Train your single layer network
 % Note: You nned to modify trainSingleLayer() in order to train the network
-
-numHidden = 7; % Change this, Number of hidde neurons 
-numIterations = 800; % Change this, Numner of iterations (Epochs)
+%rng(1234);
+numHidden = 8; % Change this, Number of hidde neurons 
+numIterations = 5500; % Change this, Numner of iterations (Epochs)
 learningRate = 0.001; % Change this, Your learningrate
-W0 = 0; % Change this, Initiate your weight matrix W
-V0 = 0; % Change this, Initiate your weight matrix V
+W0 = unifrnd(-20, 20*ones(numHidden ,size(Xtraining,1))); % Change this, Initiate your weight matrix W
+V0 = unifrnd(-20, 20*ones(size(Dt{1}, 1) , numHidden +1)); % Change this, Initiate your weight matrix V
 
-%
+%%
 tic
 [W,V, trainingError, testError ] = trainMultiLayer(Xtraining,Dt{1},Xtest,Dt{2}, W0,V0,numIterations, learningRate );
 trainingTime = toc;
-%% Plot errors
+% Plot errors
 figure(1101)
 clf
 [mErr, mErrInd] = min(testError);

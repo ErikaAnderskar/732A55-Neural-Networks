@@ -17,7 +17,7 @@ for n = 1:numIterations
     Y = Wout*Xt;
     
     %gradient
-    grad_w =  -2 * (tanh(Y) - Dt) .* tanhprim(Y) * Xt';
+    grad_w =  (-2 * (tanh(Y) - Dt) .* tanhprim(Y) * Xt')/Nt;
     
     
     Wout = Wout - learningRate*grad_w;

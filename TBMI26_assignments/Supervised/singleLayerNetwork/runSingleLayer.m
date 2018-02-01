@@ -4,7 +4,7 @@ Y = W * X;
 
 
 % Calculate classified labels
-[~, L] = max(Y,[],1);
+[~, L] = min(Y,[],1);
 L = L(:);
 end
 
