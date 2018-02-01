@@ -7,4 +7,4 @@ addpath data
 addpath helpFunctions
 addpath kNN
 addpath multiLayerNetwork
-addpath singleLayerNetwor
+addpath singleLayerNetwork
