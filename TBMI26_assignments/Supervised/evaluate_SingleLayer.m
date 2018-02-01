@@ -37,11 +37,11 @@ Xtest = [a; Xt{2}];
 %% Train your single layer network
 % Note: You nned to modify trainSingleLayer() in order to train the network
 
-numIterations = 40000; % Change this, Numner of iterations (Epochs)
+numIterations = 10000; % Change this, Numner of iterations (Epochs)
 learningRate = 0.005; % Change this, Your learningrate
-W0 = unifrnd(-1, ones(size(Dt{1}, 1) ,size(Xtraining,1))); % Change this, Initiate your weight matrix W
+W0 = unifrnd(-0.1, 0.1*ones(size(Dt{1}, 1) ,size(Xtraining,1))); % Change this, Initiate your weight matrix W
 
-[W, trainingError, testError ] = trainSingleLayer(Xtraining,Dt{1},Xtest,Dt{2}, W0,numIterations, learningRate );
+[W, trainingError, testError ] = trainSingleLayer(Xtraining,Dt{1},Xtest,Dt{2}, W0,numIterations, learningRate);
 
 % Plot errors
 figure(1101)

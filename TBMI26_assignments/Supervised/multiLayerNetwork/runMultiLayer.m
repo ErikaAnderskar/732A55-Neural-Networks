@@ -6,7 +6,7 @@ H_one = [ones(1,length(H)) ; H];
 Y = V * H_one; %output
 
 % Calculate classified labels
-[~, L] = min(Y,[],1);
+[~, L] = max(Y,[],1);
 L = L(:);
 
 end

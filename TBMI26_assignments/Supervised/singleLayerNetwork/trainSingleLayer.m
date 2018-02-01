@@ -17,12 +17,13 @@ for n = 1:numIterations
     Y = Wout*Xt;
     
     %gradient
-    grad_w =  (-2 * (tanh(Y) - Dt) .* tanhprim(Y) * Xt')/Nt;
+    grad_w =  2/Nt * ((tanh(Y) - Dt) .* tanhprim(Y)) * Xt';
+
     
     
     Wout = Wout - learningRate*grad_w;
-    trainingError(1+n) = sum(sum((Wout*Xt - Dt).^2))/Nt;
-    testError(1+n) = sum(sum((Wout*Xtest - Dtest).^2))/Ntest;
+    trainingError(1+n) = sum(sum((tanh(Wout*Xt) - Dt).^2))/Nt;
+    testError(1+n) = sum(sum((tanh(Wout*Xtest) - Dtest).^2))/Ntest;
 end
 end
 

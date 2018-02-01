@@ -60,13 +60,14 @@ Wout = W0;
 Vout = V0;
 
 Ytraining = runMultiLayer(Xtraining, W0, V0);
+Dtraining = Dt{1};
 %%
 
 for n = 1:numIterations
     [Y, L , H_one] = runMultiLayer(Xtraining, Wout, Vout);
 
     grad_v = -2 * (tanh(Y) - Y_true) .* tanhprim(Y) * H_one'; %Gradient for the output layer
-    grad_w = V(:, 2:end)' * (Y - Y_true) .* tanhprim(Wout * Xt) * Xt'; %Gradient for the hidden layer.
+    grad_w = Vout(:, 2:end)' * tanhprim(Vout * H_one).* tanhprim(Wout * Xt) * Xt'; %Gradient for the hidden layer.
 
 
 
@@ -83,25 +84,13 @@ end
 %%
 
 
-grad_w = V(:, 2:end)' * (Ytraining - Y_true) .* tanhprim(Wout * Xt) * Xt';
+grad_w = Vout(:, 2:end)' * (Ytraining - Y_true) .* tanhprim(Wout * Xt) * Xt';
 
-H = tanh(W*Xt);
+H = tanh(Wout*Xt);
 H_one = [ones(1,length(H)) ; H];
 
-V' * tanhprim(V * H_one) ;
-
-grad_w
-
-
+(Vout(:, 2:end)' * ((Ytraining - Dtraining) .* tanhprim(Vout * H_one)) .* tanhprim(Wout * Xtraining) * Xtraining')
 
 %%
-
-rng(1234)
-rand(4)
-
-
-
-
-
-
+W0 - 2*W0
 
