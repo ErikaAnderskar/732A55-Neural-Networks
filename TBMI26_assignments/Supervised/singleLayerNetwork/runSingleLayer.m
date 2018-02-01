@@ -1,6 +1,6 @@
 function [ Y, L ] = runSingleLayer(X, W)
 %W needs to be 2x3 matrix and X needs to be 3xn
-Y = tanh(W * X);
+Y = W * X;
 
 
 % Calculate classified labels
