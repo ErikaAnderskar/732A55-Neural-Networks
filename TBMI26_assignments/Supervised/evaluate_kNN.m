@@ -3,12 +3,12 @@
 %% Select which data to use:
 
 % 1 = dot cloud 1
-% 2 = dot cloud 2
+% 2 = dot cloud 2Change this to load new data 
+
 % 3 = dot cloud 3
 % 4 = OCR data
 
-dataSetNr = 3; % Change this to load new data 
-
+dataSetNr = 4; % 
 [X, D, L] = loadDataSet( dataSetNr );
 
 % You can plot and study dataset 1 to 3 by running:
@@ -38,7 +38,7 @@ LkNN = kNN(Xt{2}, k, Xt{1}, Lt{1});
 % Note: you have to modify the calcConfusionMatrix() function yourselfs.
 
 % The confucionMatrix
-cM = calcConfusionMatrix(LkNN', Lt{2})
+cM = calcConfusionMatrix(LkNN', Lt{2});
 
 % The accuracy
 acc = calcAccuracy(cM)
@@ -55,11 +55,11 @@ fold = [2 1; 3 2;1 3]
 for index = 1:10 %loops over possible k-values (1:10)
     acc = []; %Create a empty list to store accuracys for the current k 
     for j = 1:3  
-        m = fold(j,1) %index for train set
-        n = fold(j,2) %index for test set
+        m = fold(j,1); %index for train set
+        n = fold(j,2); %index for test set
         LkNN = kNN(Xt{m}, index, Xt{n}, Lt{n}); % Calculate the KNN
         cM = calcConfusionMatrix(LkNN', Lt{m}); %Calculate the confusion matrix
-        acc(j) = calcAccuracy(cM) %store the current accuracy
+        acc(j) = calcAccuracy(cM); %store the current accuracy
     end
     list_of_k(index) = mean(acc); % The average of the accuracy values for the current k value is stores
     
@@ -70,7 +70,7 @@ end
 %Väljer den optimala k är indexet för den maximala accuracyn
 optimal_k = I;
 
-k = optimal_k;
+k = optimal_k
 
 %%
 LkNN = kNN(Xt{2}, k, Xt{1}, Lt{1});
