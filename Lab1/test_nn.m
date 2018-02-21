@@ -59,7 +59,7 @@ Xt = Xtraining;
 Wout = W0;
 Vout = V0;
 
-Ytraining = runMultiLayer(Xtraining, W0, V0);
+[Y, L, H_one] = runMultiLayer(Xtraining, W0, V0);
 Dtraining = Dt{1};
 %%
 
@@ -92,5 +92,6 @@ H_one = [ones(1,length(H)) ; H];
 (Vout(:, 2:end)' * ((Ytraining - Dtraining) .* tanhprim(Vout * H_one)) .* tanhprim(Wout * Xtraining) * Xtraining')
 
 %%
-W0 - 2*W0
-
+grad_v = (((Y - Dtraining) .* (1-(Y.^2))) * H_one'); %Gradient for the output layer
+grad_w = (Vout(:, 2:end)' * ( (Y - Dtraining) .* (1-(Vout * H_one).^2) )) .* (1-(Wout * Xtraining).^2) * Xtraining'; %
+  
