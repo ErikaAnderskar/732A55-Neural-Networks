@@ -21,7 +21,7 @@ for k=1:25
 end
 
 % Generate Haar feature masks
-nbrHaarFeatures = 700;
+nbrHaarFeatures = 100; %här har jag ändrat
 haarFeatureMasks = GenerateHaarFeatureMasks(nbrHaarFeatures);
 
 figure(3);
@@ -43,77 +43,83 @@ yTrain = [ones(1,nbrTrainExamples), -ones(1,nbrTrainExamples)];
 %% Implement the AdaBoost training here
 %  Use your implementation of WeakClassifier and WeakClassifierError
 
-%initilizeing 
-D = 1/length(xTrain) *ones(size(xTrain,1),size(xTrain,2)); %weight matr
-res = ones(size(xTrain,1), size(xTrain,2)); %the end matrix wtith alpha*h_x
-alpha_mat = ones(size(xTrain,1),1); %store alphas
-h_x_matr = ones(size(xTrain,1),size(xTrain,2)); %store h_x values
-Threshold_matr = ones(size(xTrain,1),1); %save the thresholds
+nr_weak = 58; %number of weak classifiers
+
+D = 1/length(xTrain) *ones(nr_weak,size(xTrain,2)); 
+save_pred = ones(nr_weak, size(xTrain,2));
+alpha_matr = ones(nr_weak, 1);
+optim_weak = ones(nr_weak, 2);
+save_train_error = ones(1, nr_weak);
 
 
-for row=1:size(xTrain,1)
+Threshold = -500:5:500;
+save_temp = ones(length(Threshold), nbrHaarFeatures);
 
 
-X = xTrain(row,:); %take out the haar feature
-Y = yTrain;
-
-inc = ceil((max(X)-min(X))/100);
-mini = min(X);
-maxi = max(X);
-
-Threshold = mini:inc:maxi; %testing different tau
-
-temp =[];
-%find h(x)_t
-n = 0;
-for T=Threshold
-        P = 1;
-        n=n+1;
+for weak=1:nr_weak
         
-        C = WeakClassifier(X, T, P);
-        E = WeakClassifierError(C, D(row,:), Y);
     
-        if E > 0.5
-            P = -1;
+    for feat=1:nbrHaarFeatures %exctract the best feature and threshold
+        
+        X = xTrain(feat, :);
+        Y = yTrain;
+        
+        n = 0;
+        for T=Threshold
+            P = 1;
+            n=n+1;
+        
             C = WeakClassifier(X, T, P);
-            E = WeakClassifierError(C, D(row,:), Y);
-            temp(n) = E;
-        else
-           temp(n) = E;
+            E = WeakClassifierError(C, D(weak,:), Y);
+    
+            if E >= 0.5
+                P = -1;
+                C = WeakClassifier(X, T, P);
+                E = WeakClassifierError(C, D(weak,:), Y);
+            end
+            save_temp(n,feat) = E;
         end
-       %E = min(E,1-E);
-        %temp(n) = E;
+        
+    end
+    
+    [M, I] = min(save_temp); % best threshold pos = I
 
+    [M2, I2] = min(M); % best feature pos = I2
+
+    optim_T = Threshold(I(I2));
+    optim_feat = xTrain(I2, :);
+    
+    optim_weak(weak, 1) = optim_T; %save for test
+    optim_weak(weak, 2) = I2; %save for test
+
+    C_t = WeakClassifier(optim_feat, optim_T, P);
+    E_t = WeakClassifierError(C_t, D(weak,:), Y);
+    
+    %save_train_error(weak) =  sum(sign(C_t) ~= Y)/length(Y); %save the test error
+    save_train_error(weak) =  E_t; %save the test error
+    
+    alpha = 1/2*log((1-E_t)/E_t);
+    alpha_matr(weak,:) = alpha; %save for test
+
+    
+    D(weak+1,:) = D(weak,:).*exp(-alpha.*(Y.*C_t)); %update weights
+    D(weak+1,:) = D(weak+1,:)/sum(D(weak+1,:)); %nomalize weights
+    
+    save_pred(weak, :) = alpha * C_t;
+    
 end
-[M,I] = min(temp);
-T = Threshold(I); %optimal threshold
-Threshold_matr(row, :) = T;
 
-h_x = WeakClassifier(X, T, P);
-E_t = WeakClassifierError(h_x, D(1,:), Y);
-h_x_matr(row,:) = h_x;
+H_X = sign(sum(save_pred))
 
-alpha = 1/2*log((1-E_t)/E_t);
-alpha_mat(row, :) = alpha;
-
-D(row,:) =  D(row,:).*exp(-alpha.*(Y.*h_x)); %update weights
-D(row,:)=D(row,:)/sum(D(row,:)); %nomalize weights
-
-end
-
-%final classificiation
-for i=1:row
-    res(i, :) = alpha_mat(i,:) * h_x_matr(i, :); 
-end
-pred = sum(res, 1);
-pred = sign(pred);
-
-sum(Y ~= pred)/length(pred) %error
-
+sum(H_X == Y)/length(Y) %accuracy
 
 %%
-C = (P*X >= P*T)*2-1
-E = WeakClassifierError(C, D(25,:), Y)
+
+CumuVel_train = zeros(1, nr_weak);  % Pre-allocation!!!
+for k = 1:nr_weak;
+  CumuVel_train(k) = mean(save_train_error(1:k));
+end
+
 
 
 
@@ -131,26 +137,44 @@ yTest = [ones(1,nbrTestExamples), -ones(1,nbrTestExamples)];
 %  this as a performance metric since it is biased. You MUST use the test
 %  data to truly evaluate the strong classifier.
 
-for test=1:length(Threshold_matr)
+%alpha_matr
 
-    X_tst = xTest(test,:);
-    Y_tst = yTest;
+final_save = ones(nr_weak, length(xTest));
+save_test_error = ones(1, nr_weak);
+
+for test=1:nr_weak
     
-    h_x_test = WeakClassifier(X_tst, T, P); %REMEMBER TO SAVE POLARTITIESSSSSS
+    T = optim_weak(test, 1);
+    feat = optim_weak(test, 2);
     
+    test_h_x = WeakClassifier(xTest(feat,:), T, 1);
     
+    save_test_error(test) =  sum(sign(test_h_x) ~= yTest)/length(yTest); %save the test error
+    
+    final_save(test, :) =  (alpha_matr(test,:) * test_h_x);
+end
+
+CumuVel = zeros(1, nr_weak);  % Pre-allocation!!!
+for k = 1:nr_weak;
+  CumuVel(k) = mean(save_test_error(1:k));
 end
 
 
 
-WeakClassifier(X, T, P)
+PRED = sign(sum(final_save));
 
-
-Threshold_matr
+sum(PRED == yTest)/length(yTest)
 
 
 %% Plot the error of the strong classifier as  function of the number of weak classifiers.
 %  Note: you can find this error without re-training with a different
 %  number of weak classifiers.
+
+%plot(1:nr_weak, CumuVel)
+plot(1:nr_weak, CumuVel_train)
+
+
+
+
 
 
