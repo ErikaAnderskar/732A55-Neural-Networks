@@ -21,7 +21,7 @@ for k=1:25
 end
 
 % Generate Haar feature masks
-nbrHaarFeatures = 100; %har har jag ändrat
+nbrHaarFeatures = 50; %har har jag ändrat
 haarFeatureMasks = GenerateHaarFeatureMasks(nbrHaarFeatures);
 
 figure(3);
@@ -43,7 +43,7 @@ yTrain = [ones(1,nbrTrainExamples), -ones(1,nbrTrainExamples)];
 %% Implement the AdaBoost training here
 %  Use your implementation of WeakClassifier and WeakClassifierError
 
-nr_weak = 58; %number of weak classifiers
+nr_weak = 100; %number of weak classifiers
 
 D = 1/length(xTrain) *ones(nr_weak,size(xTrain,2)); 
 save_pred = ones(nr_weak, size(xTrain,2));
