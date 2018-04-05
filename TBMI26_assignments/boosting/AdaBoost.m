@@ -167,9 +167,32 @@ x = 1:nr_weak;
 p = plot(x, save_test_error, "b", x, save_train_error, "r");
 p(1).LineWidth = 1.3;
 p(2).LineWidth = 1.3;
-title("Training (blue) and test (red) errors")
+title("Training (red) and test (blue) errors")
+
+%% Plot faces 
 
 
+
+
+missclassified_nonfaces = testImages(:,:,and(PRED ~= yTest,yTest ~= 1));
+
+figure(2);
+colormap gray;
+for k=1:16
+    subplot(4,4,k), imagesc(missclassified_nonfaces(:,:,k));
+    axis image;
+    axis off;
+end
+
+%title("Misclassified non-face")
+%%
+figure(3);
+colormap gray;
+for k=1:33
+    subplot(4,4,k), imagesc(missclassified_nonfaces(:,:,k));
+    axis image;
+    axis off;
+end
 
 
 
