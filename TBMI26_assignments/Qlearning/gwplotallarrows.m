@@ -8,7 +8,7 @@ global GWTERM;
 % Arrow directions
 % Change this to select arrow directions from the Q matrix.
 A = ones(GWXSIZE, GWYSIZE);
-q
+
 for x = 1:GWXSIZE
     for y = 1:GWYSIZE
         if ~GWTERM(x,y)

@@ -1,4 +1,4 @@
-function C = WeakClassifier(T, P, X)
+function C = WeakClassifier(X, T, P)
 % WEAKCLASSIFIER Classify images using a decision stump.
 % Takes a vector X of scalars obtained by applying one Haar feature to all
 % training images. Classifies the examples using a decision stump with
