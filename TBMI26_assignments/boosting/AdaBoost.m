@@ -35,7 +35,7 @@ end
 %%
 % Create a training data set with a number of training data examples
 % from each class. Non-faces = class label y=-1, faces = class label y=1
-nbrTrainExamples = 3916;
+nbrTrainExamples = 2000;
 trainImages = cat(3,faces(:,:,1:nbrTrainExamples),nonfaces(:,:,1:nbrTrainExamples));
 xTrain = ExtractHaarFeatures(trainImages,haarFeatureMasks);
 yTrain = [ones(1,nbrTrainExamples), -ones(1,nbrTrainExamples)];
@@ -43,7 +43,7 @@ yTrain = [ones(1,nbrTrainExamples), -ones(1,nbrTrainExamples)];
 %% Implement the AdaBoost training here
 %  Use your implementation of WeakClassifier and WeakClassifierError
 
-nr_weak = 5; %number of weak classifiers
+nr_weak = 10; %number of weak classifiers
 
 D = 1/length(xTrain) *ones(nr_weak,size(xTrain,2)); 
 save_pred = ones(nr_weak, size(xTrain,2));
@@ -51,7 +51,7 @@ alpha_matr = ones(nr_weak, 1);
 optim_weak = ones(nr_weak, 3);
 save_train_error = ones(1, nr_weak);
 
-
+ pol = zeros(length(xTrain), nbrHaarFeatures);
 %Threshold = -500:5:500;
 save_temp = ones(length(xTrain), nbrHaarFeatures);
 
@@ -65,7 +65,7 @@ for weak=1:nr_weak
         
         Threshold = sort(X);
         
-        pol = [];
+      
         n = 0;
         for T=Threshold
             P = 1;
@@ -80,7 +80,7 @@ for weak=1:nr_weak
                 E = WeakClassifierError(C, D(weak,:), Y);
             end
             save_temp(n,feat) = E;
-            pol(n) = P;
+            pol(n,feat) = P;
         end
         
     end
@@ -91,8 +91,8 @@ for weak=1:nr_weak
 
     optim_T = Threshold(I(I2));
     optim_feat = xTrain(I2, :);
-    optim_P = pol(I(I2));
-    I2
+    optim_P = pol(I(I2), I2); %vilken pos är bäst
+ 
     optim_weak(weak, 1) = optim_T; %save for test
     optim_weak(weak, 2) = I2; %save for test
     optim_weak(weak, 3) = optim_P; %save the optim polarity
@@ -114,7 +114,7 @@ for weak=1:nr_weak
     
 end
 
-H_X = sign(sum(save_pred))
+H_X = sign(sum(save_pred));
 
 sum(H_X == Y)/length(Y) %accuracy
 
@@ -124,7 +124,7 @@ sum(H_X == Y)/length(Y) %accuracy
 
 %% Extract test data
 
-nbrTestExamples = 200;
+nbrTestExamples =  4916 - nbrTrainExamples;
 
 testImages  = cat(3,faces(:,:,(nbrTrainExamples+1):(nbrTrainExamples+nbrTestExamples)),...
                     nonfaces(:,:,(nbrTrainExamples+1):(nbrTrainExamples+nbrTestExamples)));

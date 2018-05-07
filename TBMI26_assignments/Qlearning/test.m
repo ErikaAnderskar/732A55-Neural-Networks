@@ -1,7 +1,7 @@
 
 %%
 %Initilize world/state
-world = 2;
+world = 4;
 gwinit(world);
 state_prev = gwstate()
 pos_prev = state_prev.pos;
@@ -11,18 +11,18 @@ look_up = ones(10,15,4).*(-0.9);
 % init values
 eps = 0.8;
 %a_prev = chooseaction(look_up, pos_prev(1), pos_prev(2), [1 2 3 4], [1 1 1 1], eps);
-alpha = 0.25;
-gamma = 0.9;
+alpha = 0.5;
+gamma = 0.1;
 
 trains = 1000;
 
 gwdraw()
 
 %%
-look_up(10,:,1) = -5 %init lowest row to -100 for action down
-look_up(1,:,2) = -5 %init highest row to -100 for action up
-look_up(:,15,3) = -5 %init right row to -100 for action right
-look_up(:,1,4) = -5 %init left row to -100 for action left
+look_up(10,:,1) = -10 %init lowest row to -100 for action down
+look_up(1,:,2) = -10 %init highest row to -100 for action up
+look_up(:,15,3) = -10 %init right row to -100 for action right
+look_up(:,1,4) = -10 %init left row to -100 for action left
 %%
 
 tic
@@ -60,9 +60,6 @@ a_prev = a;
 
 end
 
-if mod(epoch, trains - (trains/10)) == 0
-    eps = eps - 0.6;
-end
 
 
 if mod(epoch, 1000) == 0

@@ -1,11 +1,11 @@
-gwinit(2)
+gwinit(4)
 state = gwstate()
 pos_prev = state.pos;
 eps = 0;
 isTerminal = 0;
 gwdraw()
 
-
+%%
 
 while isTerminal == false
 
@@ -27,7 +27,7 @@ gwplotallarrows(look_up)
 
 %%
 
-
+gwplotallarrows(look_up)
 
 
 
