@@ -1,28 +1,27 @@
 
 %%
 %Initilize world/state
-world = 4;
+world = 3;
 gwinit(world);
 state_prev = gwstate()
 pos_prev = state_prev.pos;
 % Initilize lookup table/Qmatrix
-look_up = ones(10,15,4).*(-0.9);
+look_up = ones(10,15,4) %.*(-0.9);
 
 % init values
-eps = 0.8;
-%a_prev = chooseaction(look_up, pos_prev(1), pos_prev(2), [1 2 3 4], [1 1 1 1], eps);
-alpha = 0.5;
-gamma = 0.1;
+eps = 0.9;
+alpha = 0.4;
+gamma = 0.95;
 
-trains = 1000;
+trains = 3000;
 
 gwdraw()
 
 %%
-look_up(10,:,1) = -10 %init lowest row to -100 for action down
-look_up(1,:,2) = -10 %init highest row to -100 for action up
-look_up(:,15,3) = -10 %init right row to -100 for action right
-look_up(:,1,4) = -10 %init left row to -100 for action left
+look_up(10,:,1) = -100 %init lowest row to -100 for action down
+look_up(1,:,2) = -100 %init highest row to -100 for action up
+look_up(:,15,3) = -100 %init right row to -100 for action right
+look_up(:,1,4) = -100 %init left row to -100 for action left
 %%
 
 tic
@@ -33,19 +32,23 @@ pos_prev = state_prev.pos;
 isTerminal = state_prev.isterminal();
 step = 0;
 
+
 while isTerminal == false
 step = step + 1;
 
 [a, oa] = chooseaction(look_up, pos_prev(1), pos_prev(2), [1 2 3 4], [1 1 1 1], eps);
-Q_prev = look_up(pos_prev(1),pos_prev(2),a);
 
 act = gwaction(a);
 
-% If the robot bumps into a wall --> change action 
-while act.isvalid ~= 1 
+if act.isvalid ~= 1
+    % If the robot bumps into a wall --> change action 
+    while act.isvalid ~= 1 
     [a, oa] = chooseaction(look_up, pos_prev(1), pos_prev(2), [1 2 3 4], [1 1 1 1], eps);
     act = gwaction(a);
-end
+    end
+else
+    Q_prev = look_up(pos_prev(1),pos_prev(2),a); 
+end 
 
 r = act.feedback;
 state = gwstate();
@@ -66,21 +69,11 @@ if mod(epoch, 1000) == 0
     epoch
 end
 
-
 end
 
 toc
 
 
-%% Testig different results
-look_up_1 = look_up; %Alpha = 0.25, gamma = 0.9
-
-%%
-look_up_2 = look_up; %Alpha = 0.5, gamma = 0.9
-%%
-look_up_3 = look_up; %Alpha = 0.5, gamma = 0.7
-%%
-look_up_3 = look_up; %Alpha = 0.8, gamma = 0.9
 
 
 

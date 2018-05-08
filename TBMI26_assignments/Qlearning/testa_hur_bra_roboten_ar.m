@@ -1,4 +1,4 @@
-gwinit(4)
+gwinit(3)
 state = gwstate()
 pos_prev = state.pos;
 eps = 0;
@@ -9,7 +9,7 @@ gwdraw()
 
 while isTerminal == false
 
-[a, oa] = chooseaction(look_up, pos_prev(1), pos_prev(2), [1 2 3 4], [1 1 1 1], 0.2);
+[a, oa] = chooseaction(look_up, pos_prev(1), pos_prev(2), [1 2 3 4], [1 1 1 1], 0);
 
 act = gwaction(a);
 
